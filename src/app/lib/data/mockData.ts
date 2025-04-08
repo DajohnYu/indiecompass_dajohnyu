@@ -19,30 +19,73 @@ export const theaters: Theater[] = [
 ];
 
 export const movies: Movie[] = [
-  {
-    id: 'movie1',
-    title: 'The Seventh Seal',
-    director: 'Ingmar Bergman',
-    duration: 96,
-    synopsis: 'A man seeks answers about life, death, and existence while playing chess with Death during the Black Plague.',
-    posterUrl: '/images/seventh-seal.jpg',
-    genres: ['Drama', 'Fantasy'],
-    language: 'Swedish',
-    releaseYear: 1957
-  },
-  {
-    id: 'movie2',
-    title: 'In the Mood for Love',
-    director: 'Wong Kar-wai',
-    duration: 98,
-    synopsis: 'Two neighbors form a strong bond after both suspect extramarital activities of their spouses.',
-    posterUrl: '/images/mood-for-love.jpg',
-    genres: ['Drama', 'Romance'],
-    language: 'Cantonese',
-    releaseYear: 2000
-  },
-  // Add more movies here
-];
+    {
+      id: 'movie1',
+      title: 'The Seventh Seal',
+      director: 'Ingmar Bergman',
+      duration: 96,
+      synopsis: 'A man seeks answers about life, death, and existence while playing chess with Death during the Black Plague.',
+      posterUrl: '/images/seventh-seal.jpg',
+      genres: ['Drama', 'Fantasy'],
+      language: 'Swedish',
+      releaseYear: 1957
+    },
+    {
+      id: 'movie2',
+      title: 'In the Mood for Love',
+      director: 'Wong Kar-wai',
+      duration: 98,
+      synopsis: 'Two neighbors form a strong bond after both suspect extramarital activities of their spouses.',
+      posterUrl: '/images/mood-for-love.jpg',
+      genres: ['Drama', 'Romance'],
+      language: 'Cantonese',
+      releaseYear: 2000
+    },
+    {
+      id: 'movie3',
+      title: 'Parasite',
+      director: 'Bong Joon-ho',
+      duration: 132,
+      synopsis: 'Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.',
+      posterUrl: '/images/parasite.jpg',
+      genres: ['Thriller', 'Drama', 'Comedy'],
+      language: 'Korean',
+      releaseYear: 2019
+    },
+    {
+      id: 'movie4',
+      title: 'Portrait of a Lady on Fire',
+      director: 'Céline Sciamma',
+      duration: 122,
+      synopsis: 'On an isolated island in Brittany at the end of the eighteenth century, a female painter is obliged to paint a wedding portrait of a young woman.',
+      posterUrl: '/images/portrait.jpg',
+      genres: ['Drama', 'Romance'],
+      language: 'French',
+      releaseYear: 2019
+    },
+    {
+      id: 'movie5',
+      title: 'Moonlight',
+      director: 'Barry Jenkins',
+      duration: 111,
+      synopsis: 'A young African-American man grapples with his identity and sexuality while experiencing the everyday struggles of childhood, adolescence, and burgeoning adulthood.',
+      posterUrl: '/images/moonlight.jpg',
+      genres: ['Drama'],
+      language: 'English',
+      releaseYear: 2016
+    },
+    {
+      id: 'movie6',
+      title: 'An Unfinished Film',
+      director: 'Lou Ye',
+      duration: 124,
+      synopsis: 'A gripping tale of personal and political turbulence in contemporary China.',
+      posterUrl: '/images/unfinished-film.jpg',
+      genres: ['Drama', 'Political'],
+      language: 'Mandarin',
+      releaseYear: 2023
+    }
+  ];
 
 // Generate screenings for the next 7 days
 const today = new Date();

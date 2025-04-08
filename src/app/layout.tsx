@@ -2,6 +2,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Link from 'next/link';
 
 // Load the Inter font (modern, clean font that works well for UI)
 const inter = Inter({ subsets: ['latin'] })
@@ -27,9 +28,9 @@ export default function RootLayout({
             </div>
             <nav>
               <ul className="flex space-x-6">
-                <li><a href="/" className="hover:text-indigo-200 transition-colors">Home</a></li>
-                <li><a href="/movies" className="hover:text-indigo-200 transition-colors">Movies</a></li>
-                <li><a href="/theaters" className="hover:text-indigo-200 transition-colors">Theaters</a></li>
+                <li><Link href="/" className="hover:text-indigo-200 transition-colors">Home</Link></li>
+                <li><Link href="/movies" className="hover:text-indigo-200 transition-colors">Movies</Link></li>
+                <li><Link href="/theaters" className="hover:text-indigo-200 transition-colors">Theaters</Link></li>
               </ul>
             </nav>
           </div>
