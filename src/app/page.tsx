@@ -1,14 +1,22 @@
 'use client';
-// Update src/app/page.tsx
+// src/app/page.tsx
 
 import Link from 'next/link';
 import { movies, screenings, theaters } from './lib/data/mockData';
 import { formatShowtimeDate, getMovieById, getTheaterById } from './lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DateSelector from './components/ui/DateSelector';
 
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  
+  // Add isClient state to prevent hydration mismatch
+  const [isClient, setIsClient] = useState(false);
+  
+  // Set isClient to true once component mounts on client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
   // Filter screenings by the selected date
   const filteredScreenings = screenings.filter(screening => {
@@ -16,6 +24,26 @@ export default function Home() {
     return screeningDate.toDateString() === selectedDate.toDateString();
   });
 
+  // Show a loading state during server rendering and hydration
+  if (!isClient) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        {/* Hero Banner */}
+        <section className="relative bg-indigo-900 text-white rounded-xl overflow-hidden mb-12">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-900 to-indigo-800 opacity-90"></div>
+          <div className="relative p-8 md:p-12 max-w-2xl">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Discover Independent Cinema</h1>
+            <p className="text-xl text-indigo-100 mb-6">Your guide to unique film experiences in Seattle</p>
+            <div className="inline-block bg-white text-indigo-900 px-6 py-3 rounded-lg font-medium">
+              Loading...
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // Full page content - only rendered client-side after hydration
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Hero Banner */}
@@ -99,7 +127,7 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Featured Films section remains unchanged */}
+      {/* Featured Films section */}
       <section>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Featured Films</h2>

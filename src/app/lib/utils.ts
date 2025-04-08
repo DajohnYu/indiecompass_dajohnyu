@@ -2,6 +2,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { format, isToday, isTomorrow } from 'date-fns';
+import { Movie } from "./definitions";
 
 // Combine tailwind classes safely
 export function cn(...inputs: ClassValue[]) {
@@ -32,4 +33,32 @@ export function getMovieById(movies: any[], id: string) {
 // Get a theater from an array by ID
 export function getTheaterById(theaters: any[], id: string) {
   return theaters.find(theater => theater.id === id);
+}
+
+export function searchMovies(movies: Movie[], query: string): Movie[] {
+  const searchTerm = query.toLowerCase().trim();
+  
+  if (!searchTerm) return [];
+  
+  return movies.filter(movie => {
+    // Search by title
+    if (movie.title.toLowerCase().includes(searchTerm)) return true;
+    
+    // Search by director
+    if (movie.director.toLowerCase().includes(searchTerm)) return true;
+    
+    // Search by genre
+    if (movie.genres.some(genre => genre.toLowerCase().includes(searchTerm))) return true;
+    
+    // Search by synopsis (for keywords)
+    if (movie.synopsis.toLowerCase().includes(searchTerm)) return true;
+    
+    // Search by language
+    if (movie.language.toLowerCase().includes(searchTerm)) return true;
+    
+    // Search by year
+    if (movie.releaseYear.toString().includes(searchTerm)) return true;
+    
+    return false;
+  });
 }

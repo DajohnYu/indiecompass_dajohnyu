@@ -2,9 +2,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Link from 'next/link';
+import ClientHeader from './components/ClientHeader'
 
-// Load the Inter font (modern, clean font that works well for UI)
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -20,22 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-slate-50 text-slate-900 min-h-screen`}>
-        <header className="bg-indigo-950 text-white py-4 shadow-md">
-          <div className="container mx-auto px-4 flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold">IndieCompass</h1>
-              <p className="text-sm text-indigo-200">Seattle Independent Cinema</p>
-            </div>
-            <nav>
-              <ul className="flex space-x-6">
-                <li><Link href="/" className="hover:text-indigo-200 transition-colors">Home</Link></li>
-                <li><Link href="/movies" className="hover:text-indigo-200 transition-colors">Movies</Link></li>
-                <li><Link href="/screenings" className="hover:text-indigo-200 transition-colors">Showtimes</Link></li>
-                <li><Link href="/theaters" className="hover:text-indigo-200 transition-colors">Theaters</Link></li>
-              </ul>
-            </nav>
-          </div>
-        </header>
+        <ClientHeader />
         
         <main>{children}</main>
         
