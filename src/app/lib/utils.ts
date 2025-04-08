@@ -19,6 +19,11 @@ export function formatShowtimeDate(date: Date): string {
   }
 }
 
+// Format a date with the specified format string
+export function formatDate(date: Date, formatStr: string): string {
+  return format(date, formatStr);
+}
+
 // Get a movie from an array by ID
 export function getMovieById(movies: any[], id: string) {
   return movies.find(movie => movie.id === id);

@@ -1,18 +1,19 @@
-// src/app/page.tsx
+'use client';
+// Update src/app/page.tsx
+
 import Link from 'next/link';
 import { movies, screenings, theaters } from './lib/data/mockData';
 import { formatShowtimeDate, getMovieById, getTheaterById } from './lib/utils';
+import { useState } from 'react';
+import DateSelector from './components/ui/DateSelector';
 
 export default function Home() {
-  // Get today's screenings
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   
-  const todaysScreenings = screenings.filter(screening => {
+  // Filter screenings by the selected date
+  const filteredScreenings = screenings.filter(screening => {
     const screeningDate = new Date(screening.startTime);
-    return screeningDate.getDate() === today.getDate() &&
-           screeningDate.getMonth() === today.getMonth() &&
-           screeningDate.getFullYear() === today.getFullYear();
+    return screeningDate.toDateString() === selectedDate.toDateString();
   });
 
   return (
@@ -32,21 +33,16 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Today's Screenings */}
+      {/* Date Selector and Screenings */}
       <section className="mb-12">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold">Today's Screenings</h2>
-          <Link 
-            href="/screenings" 
-            className="text-indigo-600 hover:text-indigo-800 transition-colors"
-          >
-            View all screenings
-          </Link>
-        </div>
+        <DateSelector 
+          onDateSelect={setSelectedDate}
+          initialDate={selectedDate}
+        />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {todaysScreenings.length > 0 ? (
-            todaysScreenings.map((screening) => {
+          {filteredScreenings.length > 0 ? (
+            filteredScreenings.map((screening) => {
               const movie = getMovieById(movies, screening.movieId);
               const theater = getTheaterById(theaters, screening.theaterId);
               
@@ -88,13 +84,22 @@ export default function Home() {
             })
           ) : (
             <div className="col-span-full bg-white p-6 rounded-lg border text-center">
-              <p>No screenings scheduled for today.</p>
+              <p>No screenings scheduled for this date.</p>
             </div>
           )}
         </div>
+        
+        <div className="text-center mt-6">
+          <Link
+            href="/screenings"
+            className="inline-block text-indigo-600 hover:text-indigo-800 font-medium"
+          >
+            View all screenings →
+          </Link>
+        </div>
       </section>
       
-      {/* Featured Films */}
+      {/* Featured Films section remains unchanged */}
       <section>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Featured Films</h2>
@@ -123,7 +128,7 @@ export default function Home() {
                 <h3 className="font-medium text-slate-900">{movie.title}</h3>
                 <p className="text-sm text-slate-500 mb-2">{movie.director}</p>
                 <div className="flex flex-wrap gap-1">
-                  {movie.genres.slice(0, 2).map((genre, idx) => (
+                  {movie.genres.slice(0, 2).map((genre: string, idx: number) => (
                     <span key={idx} className="text-xs px-2 py-1 bg-slate-100 text-slate-700 rounded">
                       {genre}
                     </span>

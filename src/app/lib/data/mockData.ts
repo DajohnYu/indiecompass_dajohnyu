@@ -2,21 +2,28 @@
 import { Movie, Theater, Screening } from '@/app/lib/definitions';
 
 export const theaters: Theater[] = [
-  {
-    id: 'siff-uptown',
-    name: 'SIFF Cinema Uptown',
-    address: '511 Queen Anne Ave N, Seattle, WA 98109',
-    location: { lat: 47.6249, lng: -122.3561 },
-    amenities: ['Wheelchair Accessible', 'Concessions', 'Bar']
-  },
-  {
-    id: 'siff-egyptian',
-    name: 'SIFF Cinema Egyptian',
-    address: '805 E Pine St, Seattle, WA 98122',
-    location: { lat: 47.6156, lng: -122.3231 },
-    amenities: ['Wheelchair Accessible', 'Concessions']
-  }
-];
+    {
+      id: 'siff-uptown',
+      name: 'SIFF Cinema Uptown',
+      address: '511 Queen Anne Ave N, Seattle, WA 98109',
+      location: { lat: 47.6249, lng: -122.3561 },
+      amenities: ['Wheelchair Accessible', 'Concessions', 'Bar', 'Reserved Seating', 'Dolby Sound']
+    },
+    {
+      id: 'siff-egyptian',
+      name: 'SIFF Cinema Egyptian',
+      address: '805 E Pine St, Seattle, WA 98122',
+      location: { lat: 47.6156, lng: -122.3231 },
+      amenities: ['Wheelchair Accessible', 'Concessions', 'Historic Venue', '35mm Projection']
+    },
+    {
+      id: 'northwest-film-forum',
+      name: 'Northwest Film Forum',
+      address: '1515 12th Ave, Seattle, WA 98122',
+      location: { lat: 47.6142, lng: -122.3168 },
+      amenities: ['Wheelchair Accessible', 'Concessions', 'Member Discounts', 'Art Gallery']
+    }
+  ];
 
 export const movies: Movie[] = [
     {

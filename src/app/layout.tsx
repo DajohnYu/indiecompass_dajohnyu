@@ -30,6 +30,7 @@ export default function RootLayout({
               <ul className="flex space-x-6">
                 <li><Link href="/" className="hover:text-indigo-200 transition-colors">Home</Link></li>
                 <li><Link href="/movies" className="hover:text-indigo-200 transition-colors">Movies</Link></li>
+                <li><Link href="/screenings" className="hover:text-indigo-200 transition-colors">Showtimes</Link></li>
                 <li><Link href="/theaters" className="hover:text-indigo-200 transition-colors">Theaters</Link></li>
               </ul>
             </nav>
