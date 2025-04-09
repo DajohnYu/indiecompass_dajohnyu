@@ -59,10 +59,10 @@ export default function ScreeningsPage() {
         const screeningsData = await response.json();
         
         // Convert date strings to Date objects
-        const parsedScreenings = screeningsData.map((screening: any) => ({
+        const parsedScreenings = screeningsData.map((screening: Record<string, unknown>) => ({
           ...screening,
-          startTime: new Date(screening.startTime),
-          endTime: new Date(screening.endTime)
+          startTime: new Date(screening.startTime as string),
+          endTime: new Date(screening.endTime as string)
         }));
         
         setScreenings(parsedScreenings);

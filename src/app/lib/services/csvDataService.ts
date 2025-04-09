@@ -16,7 +16,7 @@ export async function getMovies(): Promise<Movie[]> {
       skip_empty_lines: true
     });
     
-    return records.map((record: any) => ({
+    return records.map((record: Record<string, string>) => ({
       ...record,
       duration: parseInt(record.duration),
       releaseYear: parseInt(record.releaseYear),
@@ -38,7 +38,7 @@ export async function getTheaters(): Promise<Theater[]> {
       skip_empty_lines: true
     });
     
-    return records.map((record: any) => ({
+    return records.map((record: Record<string, string>) => ({
       id: record.id,
       name: record.name,
       address: record.address,
@@ -64,7 +64,7 @@ export async function getScreenings(): Promise<Screening[]> {
       skip_empty_lines: true
     });
     
-    return records.map((record: any) => ({
+    return records.map((record: Record<string, string>) => ({
       ...record,
       startTime: new Date(record.startTime),
       endTime: new Date(record.endTime),

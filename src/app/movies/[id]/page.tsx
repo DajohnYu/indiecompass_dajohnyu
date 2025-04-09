@@ -1,6 +1,5 @@
 // src/app/movies/[id]/page.tsx
 import { getMovieById, fetchScreenings, getTheaterById } from '@/app/lib/data/dataProvider';
-import { formatShowtimeDate } from '@/app/lib/utils';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Screening } from '@/app/lib/definitions';

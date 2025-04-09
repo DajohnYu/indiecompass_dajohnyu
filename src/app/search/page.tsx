@@ -66,7 +66,7 @@ export default function SearchPage() {
         <h1 className="text-3xl font-bold mb-2">Search Results</h1>
         {query && !loading && (
           <p className="text-slate-600">
-            Found {results.length} result{results.length !== 1 ? 's' : ''} for "{query}"
+            Found {results.length} result{results.length !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;
           </p>
         )}
       </div>
@@ -134,7 +134,7 @@ export default function SearchPage() {
         <div className="bg-white p-8 rounded-lg border text-center">
           <h2 className="text-xl font-medium mb-2">No results found</h2>
           <p className="text-slate-600 mb-4">
-            We couldn't find any movies matching "{query}".
+            We couldn&apos;t find any movies matching &ldquo;{query}&rdquo;.
           </p>
           <div className="text-slate-700">
             <p className="mb-2">Suggestions:</p>

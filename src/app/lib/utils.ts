@@ -2,7 +2,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { format, isToday, isTomorrow } from 'date-fns';
-import { Movie } from "./definitions";
+import { Movie, Theater } from "./definitions";
 
 // Combine tailwind classes safely
 export function cn(...inputs: ClassValue[]) {
@@ -26,12 +26,12 @@ export function formatDate(date: Date, formatStr: string): string {
 }
 
 // Get a movie from an array by ID
-export function getMovieById(movies: any[], id: string) {
+export function getMovieById(movies: Movie[], id: string) {
   return movies.find(movie => movie.id === id);
 }
 
 // Get a theater from an array by ID
-export function getTheaterById(theaters: any[], id: string) {
+export function getTheaterById(theaters: Theater[], id: string) {
   return theaters.find(theater => theater.id === id);
 }
 
