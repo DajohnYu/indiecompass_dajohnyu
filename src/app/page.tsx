@@ -12,7 +12,12 @@ export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [theaters, setTheaters] = useState<Theater[]>([]);
   const [screenings, setScreenings] = useState<Screening[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    // Initialize with today at midnight for consistent comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -32,10 +37,10 @@ export default function Home() {
         const data = await response.json();
         
         // Convert date strings back to Date objects for screenings
-        const parsedScreenings = data.todaysScreenings.map((screening: any) => ({
+        const parsedScreenings = data.todaysScreenings.map((screening: Record<string, unknown>) => ({
           ...screening,
-          startTime: new Date(screening.startTime),
-          endTime: new Date(screening.endTime)
+          startTime: new Date(screening.startTime as string),
+          endTime: new Date(screening.endTime as string)
         }));
         
         setMovies(data.featuredMovies);
@@ -57,14 +62,15 @@ export default function Home() {
   useEffect(() => {
     async function fetchScreeningsForDate() {
       try {
-        // Skip initial load since we already fetch today's screenings
-        if (loading) return;
-        
+        // Don't skip the initial load anymore - we want to ensure it always fetches
         setLoading(true);
         
-        // Format date for the API
-        const formattedDate = selectedDate.toISOString().split('T')[0];
-        const response = await fetch(`/api/screenings/by-date?date=${formattedDate}`);
+        // Normalize date for consistent comparison
+        const normalizedDate = new Date(selectedDate);
+        normalizedDate.setHours(0, 0, 0, 0);
+        
+        // Use ISO string for API call
+        const response = await fetch(`/api/screenings/by-date?date=${normalizedDate.toISOString()}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch screenings');
@@ -73,10 +79,10 @@ export default function Home() {
         const screeningsData = await response.json();
         
         // Convert date strings to Date objects
-        const parsedScreenings = screeningsData.map((screening: any) => ({
+        const parsedScreenings = screeningsData.map((screening: Record<string, unknown>) => ({
           ...screening,
-          startTime: new Date(screening.startTime),
-          endTime: new Date(screening.endTime)
+          startTime: new Date(screening.startTime as string),
+          endTime: new Date(screening.endTime as string)
         }));
         
         setScreenings(parsedScreenings);
@@ -89,11 +95,10 @@ export default function Home() {
       }
     }
     
-    // Only fetch when date changes and we've completed initial loading
-    if (!loading || screenings.length > 0) {
-      fetchScreeningsForDate();
-    }
-  }, [selectedDate]);
+    // Always fetch screenings when date changes, without conditions
+    fetchScreeningsForDate();
+    
+  }, [selectedDate]); // Don't add loading or screenings.length to dependencies
   
   // Helper functions for getting related entities
   const getMovieById = (id: string) => movies.find(movie => movie.id === id);
@@ -128,12 +133,6 @@ export default function Home() {
       </div>
     );
   }
-  
-  // Filter screenings by the selected date (redundant with API filtering but kept for safety)
-  const filteredScreenings = screenings.filter(screening => {
-    const screeningDate = new Date(screening.startTime);
-    return screeningDate.toDateString() === selectedDate.toDateString();
-  });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -166,8 +165,8 @@ export default function Home() {
         )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredScreenings.length > 0 ? (
-            filteredScreenings.map((screening) => {
+          {screenings.length > 0 ? (
+            screenings.map((screening) => {
               const movie = getMovieById(screening.movieId);
               const theater = getTheaterById(screening.theaterId);
               

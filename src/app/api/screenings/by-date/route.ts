@@ -2,6 +2,7 @@
 import { fetchScreenings } from '@/app/lib/data/dataProvider';
 import { NextResponse } from 'next/server';
 
+// src/app/api/screenings/by-date/route.ts
 export async function GET(request: Request) {
   try {
     // Get the date from URL query parameter
@@ -24,16 +25,18 @@ export async function GET(request: Request) {
       );
     }
     
-    // Set time to 00:00:00 to match the whole day
+    // Clear time portion for comparison
     targetDate.setHours(0, 0, 0, 0);
     
     const allScreenings = await fetchScreenings();
     
-    // Filter screenings for the requested date
+    // Filter screenings for the requested date - normalize dates for comparison
     const screeningsOnDate = allScreenings.filter(screening => {
       const screeningDate = new Date(screening.startTime);
       screeningDate.setHours(0, 0, 0, 0);
-      return screeningDate.getTime() === targetDate.getTime();
+      
+      // Compare date strings rather than Date objects to avoid time issues
+      return screeningDate.toDateString() === targetDate.toDateString();
     });
     
     return NextResponse.json(screeningsOnDate);

@@ -48,8 +48,9 @@ export default function ScreeningsPage() {
         setLoading(true);
         
         // Format date for the API
-        const formattedDate = selectedDate.toISOString().split('T')[0];
-        const response = await fetch(`/api/screenings/by-date?date=${formattedDate}`);
+        const normalizedDate = new Date(selectedDate);
+        normalizedDate.setHours(0, 0, 0, 0);
+        const response = await fetch(`/api/screenings/by-date?date=${normalizedDate.toISOString()}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch screenings');

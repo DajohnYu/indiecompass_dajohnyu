@@ -31,8 +31,14 @@ export default function DateSelector({
   
   // Handle date selection
   const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-    onDateSelect(date);
+    // Create a new date object to avoid mutating the original
+    const normalizedDate = new Date(date);
+    
+    // Set to midnight to remove time component
+    normalizedDate.setHours(0, 0, 0, 0);
+    
+    setSelectedDate(normalizedDate);
+    onDateSelect(normalizedDate);
   };
   
   // Check if a date is today
