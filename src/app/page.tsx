@@ -2,48 +2,139 @@
 // src/app/page.tsx
 
 import Link from 'next/link';
-import { movies, screenings, theaters } from './lib/data/mockData';
-import { formatShowtimeDate, getMovieById, getTheaterById } from './lib/utils';
+import { formatShowtimeDate } from './lib/utils';
 import { useState, useEffect } from 'react';
 import DateSelector from './components/ui/DateSelector';
+import { Movie, Theater, Screening } from './lib/definitions';
 
 export default function Home() {
+  // Data state
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [theaters, setTheaters] = useState<Theater[]>([]);
+  const [screenings, setScreenings] = useState<Screening[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // Add isClient state to prevent hydration mismatch
-  const [isClient, setIsClient] = useState(false);
-  
-  // Set isClient to true once component mounts on client
+  // Fetch initial data
   useEffect(() => {
-    setIsClient(true);
+    async function fetchInitialData() {
+      try {
+        setLoading(true);
+        
+        // Fetch data from our home API endpoint
+        const response = await fetch('/api/home');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        
+        const data = await response.json();
+        
+        // Convert date strings back to Date objects for screenings
+        const parsedScreenings = data.todaysScreenings.map((screening: any) => ({
+          ...screening,
+          startTime: new Date(screening.startTime),
+          endTime: new Date(screening.endTime)
+        }));
+        
+        setMovies(data.featuredMovies);
+        setTheaters(data.theaters);
+        setScreenings(parsedScreenings);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load content. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchInitialData();
   }, []);
   
-  // Filter screenings by the selected date
+  // Fetch screenings when date changes
+  useEffect(() => {
+    async function fetchScreeningsForDate() {
+      try {
+        // Skip initial load since we already fetch today's screenings
+        if (loading) return;
+        
+        setLoading(true);
+        
+        // Format date for the API
+        const formattedDate = selectedDate.toISOString().split('T')[0];
+        const response = await fetch(`/api/screenings/by-date?date=${formattedDate}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch screenings');
+        }
+        
+        const screeningsData = await response.json();
+        
+        // Convert date strings to Date objects
+        const parsedScreenings = screeningsData.map((screening: any) => ({
+          ...screening,
+          startTime: new Date(screening.startTime),
+          endTime: new Date(screening.endTime)
+        }));
+        
+        setScreenings(parsedScreenings);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching screenings:', err);
+        setError('Failed to load screenings. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    // Only fetch when date changes and we've completed initial loading
+    if (!loading || screenings.length > 0) {
+      fetchScreeningsForDate();
+    }
+  }, [selectedDate]);
+  
+  // Helper functions for getting related entities
+  const getMovieById = (id: string) => movies.find(movie => movie.id === id);
+  const getTheaterById = (id: string) => theaters.find(theater => theater.id === id);
+  
+  // If we're still doing initial loading
+  if (loading && screenings.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg p-8 text-center">
+          <p className="text-indigo-600 mb-2">Loading...</p>
+          <p className="text-slate-500">Please wait while we fetch the latest showtimes.</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // If we encountered an error
+  if (error && screenings.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg p-8 text-center border border-red-200">
+          <p className="text-red-600 mb-2">Error</p>
+          <p className="text-slate-700">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // Filter screenings by the selected date (redundant with API filtering but kept for safety)
   const filteredScreenings = screenings.filter(screening => {
     const screeningDate = new Date(screening.startTime);
     return screeningDate.toDateString() === selectedDate.toDateString();
   });
 
-  // Show a loading state during server rendering and hydration
-  if (!isClient) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        {/* Hero Banner */}
-        <section className="relative bg-indigo-900 text-white rounded-xl overflow-hidden mb-12">
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-900 to-indigo-800 opacity-90"></div>
-          <div className="relative p-8 md:p-12 max-w-2xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Discover Independent Cinema</h1>
-            <p className="text-xl text-indigo-100 mb-6">Your guide to unique film experiences in Seattle</p>
-            <div className="inline-block bg-white text-indigo-900 px-6 py-3 rounded-lg font-medium">
-              Loading...
-            </div>
-          </div>
-        </section>
-      </div>
-    );
-  }
-
-  // Full page content - only rendered client-side after hydration
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Hero Banner */}
@@ -68,11 +159,17 @@ export default function Home() {
           initialDate={selectedDate}
         />
         
+        {loading && screenings.length > 0 && (
+          <div className="text-center py-4">
+            <p className="text-indigo-600">Updating screenings...</p>
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredScreenings.length > 0 ? (
             filteredScreenings.map((screening) => {
-              const movie = getMovieById(movies, screening.movieId);
-              const theater = getTheaterById(theaters, screening.theaterId);
+              const movie = getMovieById(screening.movieId);
+              const theater = getTheaterById(screening.theaterId);
               
               return (
                 <div key={screening.id} className="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -140,7 +237,7 @@ export default function Home() {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {movies.slice(0, 4).map((movie) => (
+          {movies.map((movie) => (
             <Link 
               href={`/movies/${movie.id}`} 
               key={movie.id}

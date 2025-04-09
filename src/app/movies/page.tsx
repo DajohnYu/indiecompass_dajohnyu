@@ -1,8 +1,10 @@
 // src/app/movies/page.tsx
-import { movies } from '@/app/lib/data/mockData';
+import { fetchMovies } from '@/app/lib/data/dataProvider';
 import Link from 'next/link';
 
-export default function MoviesPage() {
+export default async function MoviesPage() {
+  const movies = await fetchMovies();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">All Movies</h1>
@@ -14,8 +16,8 @@ export default function MoviesPage() {
             key={movie.id}
             className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow border"
           >
+            {/* Rest of your component remains the same */}
             <div className="aspect-[2/3] bg-slate-200 relative">
-              {/* Placeholder for movie poster */}
               <div className="absolute inset-0 flex items-center justify-center text-slate-400 font-medium p-4 text-center">
                 {movie.title}
               </div>

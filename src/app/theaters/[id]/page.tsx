@@ -1,19 +1,22 @@
 // src/app/theaters/[id]/page.tsx
-import { theaters, screenings, movies } from '@/app/lib/data/mockData';
-import { formatShowtimeDate, getMovieById, getTheaterById } from '@/app/lib/utils';
+import { getTheaterById, fetchScreenings, getMovieById } from '@/app/lib/data/dataProvider';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Screening } from '@/app/lib/definitions';
 
-export default function TheaterPage({ params }: { params: { id: string } }) {
-  const theater = getTheaterById(theaters, params.id);
+export default async function TheaterPage({ params }: { params: { id: string } }) {
+  const theater = await getTheaterById(params.id);
   
   // If theater doesn't exist, show 404
   if (!theater) {
     notFound();
   }
   
-  // Get all screenings for this theater, sorted by date and time
-  const theaterScreenings = screenings
+  // Get all screenings
+  const allScreenings = await fetchScreenings();
+  
+  // Filter for this theater
+  const theaterScreenings = allScreenings
     .filter(screening => screening.theaterId === theater.id)
     .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
   
@@ -33,7 +36,7 @@ export default function TheaterPage({ params }: { params: { id: string } }) {
     
     acc[dateStr].push(screening);
     return acc;
-  }, {} as Record<string, typeof screenings>);
+  }, {} as Record<string, Screening[]>);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -84,70 +87,78 @@ export default function TheaterPage({ params }: { params: { id: string } }) {
         <h2 className="text-2xl font-semibold mb-6">Upcoming Screenings</h2>
         
         {Object.keys(screeningsByDate).length > 0 ? (
-          Object.entries(screeningsByDate).map(([date, dateScreenings]) => (
-            <div key={date} className="mb-8">
-              <h3 className="text-xl font-medium mb-4 text-slate-800">{date}</h3>
-              <div className="border rounded-lg overflow-hidden shadow-sm mb-8">
-                <table className="w-full">
-                  <thead className="bg-slate-50 border-b">
-                    <tr>
-                      <th className="text-left p-4 font-semibold text-slate-700">Time</th>
-                      <th className="text-left p-4 font-semibold text-slate-700">Movie</th>
-                      <th className="text-left p-4 font-semibold text-slate-700">Screen</th>
-                      <th className="text-left p-4 font-semibold text-slate-700">Format</th>
-                      <th className="text-left p-4 font-semibold text-slate-700">Tickets</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {dateScreenings.map((screening) => {
-                      const movie = getMovieById(movies, screening.movieId);
-                      return (
-                        <tr key={screening.id} className="hover:bg-slate-50">
-                          <td className="p-4 font-medium text-indigo-700">
-                            {new Date(screening.startTime).toLocaleTimeString('en-US', {
-                              hour: 'numeric',
-                              minute: '2-digit',
-                            })}
-                          </td>
-                          <td className="p-4">
-                            <Link href={`/movies/${movie?.id}`} className="font-medium text-slate-900 hover:text-indigo-600 transition-colors">
-                              {movie?.title}
-                            </Link>
-                            <p className="text-sm text-slate-500">
-                              {movie?.duration} min • {movie?.genres.slice(0, 2).join(', ')}
-                            </p>
-                          </td>
-                          <td className="p-4 text-slate-700">
-                            {screening.screenId.replace('screen-', '')}
-                          </td>
-                          <td className="p-4">
-                            <span className="inline-block px-2 py-1 text-xs rounded bg-slate-100 text-slate-700">
-                              {screening.format}
-                            </span>
-                            {screening.specialEvent && (
-                              <span className="inline-block px-2 py-1 text-xs rounded bg-amber-100 text-amber-800 ml-2">
-                                Special
+          Object.entries(screeningsByDate).map(async ([date, dateScreenings]) => {
+            // Pre-fetch movies for this date's screenings
+            const moviePromises = dateScreenings.map(screening => 
+              getMovieById(screening.movieId)
+            );
+            const movies = await Promise.all(moviePromises);
+            
+            return (
+              <div key={date} className="mb-8">
+                <h3 className="text-xl font-medium mb-4 text-slate-800">{date}</h3>
+                <div className="border rounded-lg overflow-hidden shadow-sm mb-8">
+                  <table className="w-full">
+                    <thead className="bg-slate-50 border-b">
+                      <tr>
+                        <th className="text-left p-4 font-semibold text-slate-700">Time</th>
+                        <th className="text-left p-4 font-semibold text-slate-700">Movie</th>
+                        <th className="text-left p-4 font-semibold text-slate-700">Screen</th>
+                        <th className="text-left p-4 font-semibold text-slate-700">Format</th>
+                        <th className="text-left p-4 font-semibold text-slate-700">Tickets</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                      {dateScreenings.map((screening, index) => {
+                        const movie = movies[index];
+                        return (
+                          <tr key={screening.id} className="hover:bg-slate-50">
+                            <td className="p-4 font-medium text-indigo-700">
+                              {new Date(screening.startTime).toLocaleTimeString('en-US', {
+                                hour: 'numeric',
+                                minute: '2-digit',
+                              })}
+                            </td>
+                            <td className="p-4">
+                              <Link href={`/movies/${movie?.id}`} className="font-medium text-slate-900 hover:text-indigo-600 transition-colors">
+                                {movie?.title}
+                              </Link>
+                              <p className="text-sm text-slate-500">
+                                {movie?.duration} min • {movie?.genres.slice(0, 2).join(', ')}
+                              </p>
+                            </td>
+                            <td className="p-4 text-slate-700">
+                              {screening.screenId.replace('screen-', '')}
+                            </td>
+                            <td className="p-4">
+                              <span className="inline-block px-2 py-1 text-xs rounded bg-slate-100 text-slate-700">
+                                {screening.format}
                               </span>
-                            )}
-                          </td>
-                          <td className="p-4">
-                            <a 
-                              href={screening.ticketUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700 transition-colors inline-block"
-                            >
-                              Buy Tickets
-                            </a>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                              {screening.specialEvent && (
+                                <span className="inline-block px-2 py-1 text-xs rounded bg-amber-100 text-amber-800 ml-2">
+                                  Special
+                                </span>
+                              )}
+                            </td>
+                            <td className="p-4">
+                              <a 
+                                href={screening.ticketUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700 transition-colors inline-block"
+                              >
+                                Buy Tickets
+                              </a>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="bg-white p-6 rounded-lg border text-center">
             <p className="text-slate-700">No upcoming screenings scheduled at this theater.</p>

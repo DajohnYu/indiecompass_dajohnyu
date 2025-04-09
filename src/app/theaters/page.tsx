@@ -1,8 +1,10 @@
 // src/app/theaters/page.tsx
-import { theaters } from '@/app/lib/data/mockData';
+import { fetchTheaters } from '@/app/lib/data/dataProvider';
 import Link from 'next/link';
 
-export default function TheatersPage() {
+export default async function TheatersPage() {
+  const theaters = await fetchTheaters();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Theaters</h1>
@@ -27,7 +29,7 @@ export default function TheatersPage() {
               </h2>
               <p className="text-slate-600 mb-4">{theater.address}</p>
               <div className="flex flex-wrap gap-2">
-                {theater.amenities.map((amenity, idx) => (
+                {theater.amenities.map((amenity: string, idx: number) => (
                   <span key={idx} className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs">
                     {amenity}
                   </span>

@@ -1,23 +1,26 @@
 // src/app/movies/[id]/page.tsx
-import { movies, screenings, theaters } from '@/app/lib/data/mockData';
-import { formatShowtimeDate, getMovieById, getTheaterById } from '@/app/lib/utils';
+import { getMovieById, fetchScreenings, getTheaterById } from '@/app/lib/data/dataProvider';
+import { formatShowtimeDate } from '@/app/lib/utils';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Screening } from '@/app/lib/definitions';
 
-// Define props for the page component
-export default function MoviePage({ params }: { params: { id: string } }) {
-  const movie = getMovieById(movies, params.id);
+export default async function MoviePage({ params }: { params: { id: string } }) {
+  const movie = await getMovieById(params.id);
   
   // If movie doesn't exist, show 404
   if (!movie) {
     notFound();
   }
   
-  // Get all screenings for this movie, sorted by date
-  const movieScreenings = screenings
+  // Get all screenings
+  const allScreenings = await fetchScreenings();
+  
+  // Filter for this movie
+  const movieScreenings = allScreenings
     .filter(screening => screening.movieId === movie.id)
     .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-
+  
   // Group screenings by date
   const screeningsByDate = movieScreenings.reduce((acc, screening) => {
     const date = new Date(screening.startTime);
@@ -34,7 +37,7 @@ export default function MoviePage({ params }: { params: { id: string } }) {
     
     acc[dateStr].push(screening);
     return acc;
-  }, {} as Record<string, typeof screenings>);
+  }, {} as Record<string, Screening[]>);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -94,51 +97,60 @@ export default function MoviePage({ params }: { params: { id: string } }) {
         <h2 className="text-2xl font-semibold mb-6">Upcoming Screenings</h2>
         
         {Object.keys(screeningsByDate).length > 0 ? (
-          Object.entries(screeningsByDate).map(([date, dateScreenings]) => (
-            <div key={date} className="mb-8">
-              <h3 className="text-xl font-medium mb-4 text-slate-800">{date}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {dateScreenings.map((screening) => {
-                  const theater = getTheaterById(theaters, screening.theaterId);
-                  return (
-                    <div key={screening.id} className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start mb-3">
-                        <p className="text-indigo-700 font-semibold">
-                          {new Date(screening.startTime).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                          })}
-                        </p>
-                        <span className="inline-block px-2 py-1 text-xs rounded bg-slate-100 text-slate-700">
-                          {screening.format}
-                        </span>
+          Object.entries(screeningsByDate).map(async ([date, dateScreenings]) => {
+            // Pre-fetch theaters for this date's screenings
+            const theaterPromises = dateScreenings.map(screening => 
+              getTheaterById(screening.theaterId)
+            );
+            const theaters = await Promise.all(theaterPromises);
+            
+            return (
+              <div key={date} className="mb-8">
+                <h3 className="text-xl font-medium mb-4 text-slate-800">{date}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {dateScreenings.map((screening, index) => {
+                    const theater = theaters[index];
+                    
+                    return (
+                      <div key={screening.id} className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
+                        <div className="flex justify-between items-start mb-3">
+                          <p className="text-indigo-700 font-semibold">
+                            {new Date(screening.startTime).toLocaleTimeString('en-US', {
+                              hour: 'numeric',
+                              minute: '2-digit',
+                            })}
+                          </p>
+                          <span className="inline-block px-2 py-1 text-xs rounded bg-slate-100 text-slate-700">
+                            {screening.format}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-900">{theater?.name}</p>
+                          <p className="text-sm text-slate-500">Screen {screening.screenId.replace('screen-', '')}</p>
+                        </div>
+                        <div className="mt-4 flex justify-between">
+                          <Link
+                            href={`/theaters/${theater?.id}`}
+                            className="text-indigo-600 text-sm hover:text-indigo-800"
+                          >
+                            Theater info
+                          </Link>
+                          <a 
+                            href={screening.ticketUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700 transition-colors"
+                          >
+                            Buy Tickets
+                          </a>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-slate-900">{theater?.name}</p>
-                        <p className="text-sm text-slate-500">Screen {screening.screenId.replace('screen-', '')}</p>
-                      </div>
-                      <div className="mt-4 flex justify-between">
-                        <Link
-                          href={`/theaters/${theater?.id}`}
-                          className="text-indigo-600 text-sm hover:text-indigo-800"
-                        >
-                          Theater info
-                        </Link>
-                        <a 
-                          href={screening.ticketUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700 transition-colors"
-                        >
-                          Buy Tickets
-                        </a>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="bg-white p-6 rounded-lg border text-center">
             <p className="text-slate-700">No upcoming screenings scheduled for this movie.</p>

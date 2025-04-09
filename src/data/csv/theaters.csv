@@ -1,0 +1,4 @@
+id,name,address,location_lat,location_lng,amenities
+siff-uptown,SIFF Cinema Uptown,511 Queen Anne Ave N Seattle WA 98109,47.6249,-122.3561,"Wheelchair Accessible,Concessions,Bar,Reserved Seating,Dolby Sound"
+siff-egyptian,SIFF Cinema Egyptian,805 E Pine St Seattle WA 98122,47.6156,-122.3231,"Wheelchair Accessible,Concessions,Historic Venue,35mm Projection"
+northwest-film-forum,Northwest Film Forum,1515 12th Ave Seattle WA 98122,47.6142,-122.3168,"Wheelchair Accessible,Concessions,Member Discounts,Art Gallery"

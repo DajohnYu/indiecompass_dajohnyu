@@ -1,0 +1,7 @@
+id,title,director,duration,synopsis,posterUrl,genres,language,releaseYear
+movie1,The Seventh Seal,Ingmar Bergman,96,"A man seeks answers about life, death, and existence while playing chess with Death during the Black Plague.",/images/seventh-seal.jpg,"Drama,Fantasy",Swedish,1957
+movie2,In the Mood for Love,Wong Kar-wai,98,Two neighbors form a strong bond after both suspect extramarital activities of their spouses.,/images/mood-for-love.jpg,"Drama,Romance",Cantonese,2000
+movie3,Parasite,Bong Joon-ho,132,Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.,/images/parasite.jpg,"Thriller,Drama,Comedy",Korean,2019
+movie4,Portrait of a Lady on Fire,Céline Sciamma,122,On an isolated island in Brittany at the end of the eighteenth century a female painter is obliged to paint a wedding portrait of a young woman.,/images/portrait.jpg,"Drama,Romance",French,2019
+movie5,Moonlight,Barry Jenkins,111,"A young African-American man grapples with his identity and sexuality while experiencing the everyday struggles of childhood, adolescence, and burgeoning adulthood.",/images/moonlight.jpg,Drama,English,2016
+movie6,An Unfinished Film,Lou Ye,124,A gripping tale of personal and political turbulence in contemporary China.,/images/unfinished-film.jpg,"Drama,Political",Mandarin,2023
