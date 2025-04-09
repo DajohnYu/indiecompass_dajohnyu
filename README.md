@@ -42,9 +42,15 @@ Follow these steps to get IndieCompass up and running on your local machine:
 
 1.  Navigate to the project directory:
 
-    bash
+    cd indiecompass
+2. Install dependencies
+    npm install
 
-1.  `http://localhost:3000`
+3. Start server
+    npm run dev
+
+4. Navigate to
+    `http://localhost:3000`
 
 ### Testing Different Features
 
@@ -92,7 +98,7 @@ IndieCompass follows a hybrid rendering architecture with both server and client
 
 ### Component Structure
 
-[INSERT DIAGRAM]
+![UML](indiecompass-0.1.0.png)
 
 ### Data Flow
 
