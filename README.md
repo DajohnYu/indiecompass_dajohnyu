@@ -3,16 +3,6 @@ IndieCompass
 
 A centralized platform for discovering independent cinema showtimes in Seattle.
 
-Table of Contents
------------------
-
-1.  [Introduction](https://chat.mtfarm.me/c/f6cdc413-654e-4b44-8cd6-cd2659297078#introduction)
-2.  [Tech Stack](https://chat.mtfarm.me/c/f6cdc413-654e-4b44-8cd6-cd2659297078#tech-stack)
-3.  [Technical Architecture](https://chat.mtfarm.me/c/f6cdc413-654e-4b44-8cd6-cd2659297078#technical-architecture)
-4.  [Data Schema](https://chat.mtfarm.me/c/f6cdc413-654e-4b44-8cd6-cd2659297078#data-schema)
-5.  [Quick Start Guide](https://chat.mtfarm.me/c/f6cdc413-654e-4b44-8cd6-cd2659297078#quick-start-guide)
-6.  [Extending the Application](https://chat.mtfarm.me/c/f6cdc413-654e-4b44-8cd6-cd2659297078#extending-the-application)
-
 Introduction
 ------------
 
@@ -36,6 +26,33 @@ The application is designed to be expandable, initially focusing on SIFF (Seattl
 -   Theater operators who want to reach wider audiences
 -   Film distributors seeking to connect with appropriate venues
 -   The organization's staff who analyze audience preferences
+
+Quick Start Guide
+-----------------
+
+Follow these steps to get IndieCompass up and running on your local machine:
+
+### Prerequisites
+
+-   Node.js version 20.x or higher (required for Next.js 14)
+-   npm (comes with Node.js)
+-   Git (to clone the repository)
+
+### Installation
+
+1.  Navigate to the project directory:
+
+    bash
+
+1.  `http://localhost:3000`
+
+### Testing Different Features
+
+1.  **Browse Movies**: Visit `/movies` to see all available films
+2.  **View Movie Details**: Click on any movie to see details and showtimes
+3.  **Browse Theaters**: Visit `/theaters` to see all theaters
+4.  **Search**: Use the search bar in the header to find movies
+5.  **Filter by Date**: Use the date selector on the home or screenings pages
 
 Tech Stack
 ----------
@@ -190,33 +207,6 @@ screening-1,movie1,siff-uptown,screen-1,2025-04-08T19:00:00,2025-04-08T20:36:00,
 -   **Foreign Keys**:
     -   `movieId` in Screenings references `id` in Movies
     -   `theaterId` in Screenings references `id` in Theaters
-
-Quick Start Guide
------------------
-
-Follow these steps to get IndieCompass up and running on your local machine:
-
-### Prerequisites
-
--   Node.js version 20.x or higher (required for Next.js 14)
--   npm (comes with Node.js)
--   Git (to clone the repository)
-
-### Installation
-
-1.  Navigate to the project directory:
-
-    bash
-
-1.  `http://localhost:3000`
-
-### Testing Different Features
-
-1.  **Browse Movies**: Visit `/movies` to see all available films
-2.  **View Movie Details**: Click on any movie to see details and showtimes
-3.  **Browse Theaters**: Visit `/theaters` to see all theaters
-4.  **Search**: Use the search bar in the header to find movies
-5.  **Filter by Date**: Use the date selector on the home or screenings pages
 
 Extending the Application
 -------------------------
