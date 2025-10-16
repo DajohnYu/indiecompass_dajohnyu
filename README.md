@@ -1,3 +1,9 @@
+## Adapted from STArt Film Studio, update with:
+##     git fetch upstream
+##     git checkout main
+##     git merge upstream/main
+##     git push origin main
+
 IndieCompass
 ============
 
